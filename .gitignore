@@ -1,0 +1,18 @@
+# Secrets
+.env
+
+# Zustand, der von den Skripten erzeugt wird (IDs aus der eigenen Workspace)
+.environment_id
+.specialist_ids.json
+.coordinator_id
+.skill_ids.json
+.last_session_id
+
+# Ergebnisse
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
