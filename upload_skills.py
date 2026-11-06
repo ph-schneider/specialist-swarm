@@ -80,9 +80,8 @@ def main() -> None:
 
         current = client.beta.agents.retrieve(specialist_id)
         # Avoid duplicate attachment on re-run
-        # current.skills contains model objects (not dicts)
         already_attached = any(
-            getattr(s, "skill_id", None) == skill_id for s in (current.skills or [])
+            s.get("skill_id") == skill_id for s in (current.skills or [])
         )
         if already_attached:
             print(f"  already attached ✓ (skipping)")
