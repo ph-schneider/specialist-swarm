@@ -26,6 +26,7 @@ SKILL_TO_SPECIALIST = {
     "pricing-playbook": "pricing",
     "legal-checklist":  "legal",
     "competitive-intel": "competitive",
+    "technical-fit":    "technical_fit",
 }
 
 
