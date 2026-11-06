@@ -47,7 +47,7 @@ def main() -> None:
     print("Checking for existing skills...")
     existing_by_title: dict[str, str] = {}
     for page in client.beta.skills.list(source="custom"):
-        existing_by_title[page.display_title] = page.id
+        existing_by_title[page.display_name] = page.id
 
     uploaded: dict[str, str] = {}
 
@@ -67,7 +67,7 @@ def main() -> None:
         else:
             print(f"Uploading skill: {skill_name}...")
             skill = client.beta.skills.create(
-                display_title=display_title,
+                display_name=display_title,
                 files=files_from_dir(str(skill_dir)),
             )
             uploaded[skill_name] = skill.id
@@ -80,16 +80,19 @@ def main() -> None:
 
         current = client.beta.agents.retrieve(specialist_id)
         # Avoid duplicate attachment on re-run
+        # current.skills contains model objects (not dicts)
         already_attached = any(
-            s.get("skill_id") == skill_id for s in (current.skills or [])
+            getattr(s, "skill_id", None) == skill_id for s in (current.skills or [])
         )
         if already_attached:
             print(f"  already attached ✓ (skipping)")
             continue
 
-        new_skills = list(current.skills or []) + [
-            {"type": "custom", "skill_id": skill_id, "version": "latest"}
-        ]
+        # The API expects plain dicts, so rebuild the existing entries too.
+        new_skills = [
+            {"type": s.type, "skill_id": s.skill_id, "version": s.version}
+            for s in (current.skills or [])
+        ] + [{"type": "custom", "skill_id": skill_id, "version": "latest"}]
         client.beta.agents.update(
             specialist_id,
             version=current.version,
